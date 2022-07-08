@@ -45,9 +45,9 @@ cp $IO_PATH/.env* $BKP_PATH/$BKP_FOLDER/backend/
 if ! type docker-backup &> /dev/null; then
     echo "Starting Docker backup process with 'docker-backup' to all containers..."
 
-    mkdir -p $BKP_PATH/$BKP_FOLDER/backend/docker
+    mkdir -p $BKP_PATH/$BKP_FOLDER/docker
 
-    cd $BKP_PATH/$BKP_FOLDER/backend/docker
+    cd $BKP_PATH/$BKP_FOLDER/docker
 
     docker-backup backup --all --stopped --tar --verbose
 else
