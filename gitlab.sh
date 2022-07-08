@@ -14,7 +14,7 @@ BKP_FOLDER="io_gitlab_$(date +%Y-%m-%d_%H-%M-%S)"
 
 echo "Deleting old backups (older than 7 days)..."
 
-find $BKP_PATH/* -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
+find $BKP_PATH -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
 
 echo "Creating backup folder: '$BKP_FOLDER'..."
 
