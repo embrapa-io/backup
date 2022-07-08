@@ -6,22 +6,34 @@ type gitlab-backup > /dev/null 2>&1 || { echo >&2 "The command 'gitlab-backup' h
 
 set -e
 
-BKP_FOLDER="embrapa.io_gitlab_$(date +%Y-%m-%d_%H-%M-%S)"
+BKP_PATH="/var/opt/embrapa.io/backup"
 
-echo "Will be created backup folder: '$BKP_FOLDER'..."
+[ ! -d $BKP_PATH ] && echo "$BKP_PATH does not exist." && exit 1
+
+BKP_FOLDER="io_gitlab_$(date +%Y-%m-%d_%H-%M-%S)"
+
+echo "Deleting old backups (older than 7 days)..."
+
+find $BKP_PATH/* -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
+
+echo "Creating backup folder: '$BKP_FOLDER'..."
+
+mkdir -p $BKP_PATH/$BKP_FOLDER/gitlab/etc
+
+echo "Running GitLab backup process..."
 
 gitlab-backup create
 
-mkdir -p /var/opt/embrapa.io/backups/$BKP_FOLDER/gitlab/etc
-
-mv /var/opt/gitlab/backups/* /var/opt/embrapa.io/backups/$BKP_FOLDER/gitlab/
+mv /var/opt/gitlab/backups/*.tar $BKP_PATH/$BKP_FOLDER/gitlab/
 
 echo "Copying GitLab config files..."
 
-cp -r /etc/gitlab/* /var/opt/embrapa.io/backups/$BKP_FOLDER/gitlab/etc/
+cp -r /etc/gitlab/* $BKP_PATH/$BKP_FOLDER/gitlab/etc/
 
-tar -czvf /var/opt/embrapa.io/backups/$BKP_FOLDER.tar.gz -C /var/opt/embrapa.io/backups $BKP_FOLDER
+echo "Compressing backup folder..."
 
-rm -rf /var/opt/embrapa.io/backups/$BKP_FOLDER
+tar -czvf $BKP_PATH/$BKP_FOLDER.tar.gz -C $BKP_PATH $BKP_FOLDER
 
-echo "All done!"
+rm -rf $BKP_PATH/$BKP_FOLDER
+
+echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
