@@ -14,6 +14,8 @@ IO_PATH="/root/embrapa.io/backend"
 
 BKP_PATH="/var/opt/embrapa.io/backup"
 
+mkdir -p $BKP_PATH
+
 [ ! -d $BKP_PATH ] && echo "$BKP_PATH does not exist." && exit 1
 
 BKP_FOLDER="io_backend_$(date +%Y-%m-%d_%H-%M-%S)"

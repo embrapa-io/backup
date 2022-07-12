@@ -8,6 +8,8 @@ set -e
 
 BKP_PATH="/var/opt/embrapa.io/backup"
 
+mkdir -p $BKP_PATH
+
 [ ! -d $BKP_PATH ] && echo "$BKP_PATH does not exist." && exit 1
 
 BKP_FOLDER="io_gitlab_$(date +%Y-%m-%d_%H-%M-%S)"
