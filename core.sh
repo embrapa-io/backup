@@ -4,8 +4,6 @@ echo "Starting embrapa.io backup process to backend..."
 
 type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Aborting."; exit 1; }
 
-type docker-compose > /dev/null 2>&1 || { echo >&2 "Command 'docker-compose' has not found! Aborting."; exit 1; }
-
 set -e
 
 IO_PATH="/root/embrapa.io/backend"
@@ -32,9 +30,9 @@ echo "Running Docker Compose backup process..."
 
 cd $IO_PATH
 
-env $(cat .env.cli) docker-compose build --force-rm --no-cache backup
+env $(cat .env.cli) docker compose build --force-rm --no-cache backup
 
-env $(cat .env.cli) docker-compose run --rm --no-deps backup
+env $(cat .env.cli) docker compose run --rm --no-deps backup
 
 echo "Copying backup and config files..."
 

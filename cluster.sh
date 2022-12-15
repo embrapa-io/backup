@@ -4,8 +4,6 @@ echo "Starting embrapa.io backup process to cluster.agro.rocks..."
 
 type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Aborting."; exit 1; }
 
-type docker-compose > /dev/null 2>&1 || { echo >&2 "Command 'docker-compose' has not found! Aborting."; exit 1; }
-
 type docker-backup > /dev/null 2>&1 || { echo >&2 "Command 'docker-backup' has not found! See: https://github.com/muesli/docker-backup. Aborting."; exit 1; }
 
 set -e

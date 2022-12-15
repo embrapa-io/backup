@@ -6,8 +6,6 @@ echo "Starting embrapa.io backup process to Matomo..."
 
 type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Aborting."; exit 1; }
 
-type docker-compose > /dev/null 2>&1 || { echo >&2 "Command 'docker-compose' has not found! Aborting."; exit 1; }
-
 set -e
 
 MATOMO_PATH="/root/matomo"
@@ -34,9 +32,9 @@ echo "Running Docker Compose backup process..."
 
 cd $MATOMO_PATH
 
-docker-compose build --force-rm --no-cache backup
+docker compose build --force-rm --no-cache backup
 
-docker-compose run --rm --no-deps backup
+docker compose run --rm --no-deps backup
 
 echo "Copying backup and config files..."
 

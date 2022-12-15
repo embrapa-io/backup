@@ -6,8 +6,6 @@ echo "Starting embrapa.io backup process to Sentry..."
 
 type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Aborting."; exit 1; }
 
-type docker-compose > /dev/null 2>&1 || { echo >&2 "Command 'docker-compose' has not found! Aborting."; exit 1; }
-
 set -e
 
 SENTRY_PATH="/root/sentry"
@@ -34,7 +32,7 @@ echo "Running Docker Compose backup process..."
 
 cd $SENTRY_PATH
 
-docker-compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export > $BKP_PATH/$BKP_FOLDER/sentry/backup.json
+docker compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export > $BKP_PATH/$BKP_FOLDER/sentry/backup.json
 
 echo "Copying config files..."
 
