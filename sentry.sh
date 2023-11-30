@@ -42,6 +42,8 @@ cp $SENTRY_PATH/sentry/sentry.conf.py $BKP_PATH/$BKP_FOLDER/sentry/
 # When Sentry is running in dedicated server:
 
 # if ! type docker-backup &> /dev/null; then
+#     set +e
+
 #     echo "Starting Docker backup process with 'docker-backup' to all containers..."
 
 #     mkdir -p $BKP_PATH/$BKP_FOLDER/docker
@@ -49,6 +51,8 @@ cp $SENTRY_PATH/sentry/sentry.conf.py $BKP_PATH/$BKP_FOLDER/sentry/
 #     cd $BKP_PATH/$BKP_FOLDER/docker
 
 #     docker-backup backup --all --stopped --tar --verbose
+
+#     set -e
 # else
 #     echo "Command 'docker-backup' has not found! See: https://github.com/muesli/docker-backup"
 # fi

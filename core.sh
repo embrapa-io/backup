@@ -43,6 +43,8 @@ rm $IO_PATH/.embrapa/backup/*.tar.gz
 cp $IO_PATH/.env* $BKP_PATH/$BKP_FOLDER/backend/
 
 if ! type docker-backup &> /dev/null; then
+    set +e
+
     echo "Starting Docker backup process with 'docker-backup' to all containers..."
 
     mkdir -p $BKP_PATH/$BKP_FOLDER/docker
@@ -50,6 +52,8 @@ if ! type docker-backup &> /dev/null; then
     cd $BKP_PATH/$BKP_FOLDER/docker
 
     docker-backup backup --all --stopped --tar --verbose
+
+    set -e
 else
     echo "Command 'docker-backup' has not found! See: https://github.com/muesli/docker-backup"
 fi
