@@ -39,3 +39,7 @@ tar -czvf $BKP_PATH/$BKP_FOLDER.tar.gz -C $BKP_PATH $BKP_FOLDER
 rm -rf $BKP_PATH/$BKP_FOLDER
 
 echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
+
+echo "Clean up unused images..."
+
+docker image prune -af --filter "until=24h"
