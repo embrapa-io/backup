@@ -24,11 +24,15 @@ echo "Creating backup folder: '$BKP_FOLDER'..."
 
 mkdir -p $BKP_PATH/$BKP_FOLDER/cluster.agro.rocks
 
+set +e
+
 echo "Starting Docker backup process with 'docker-backup' to all containers..."
 
 cd $BKP_PATH/$BKP_FOLDER/cluster.agro.rocks
 
 docker-backup backup --all --stopped --tar --verbose
+
+set -e
 
 echo "Compressing backup folder..."
 
