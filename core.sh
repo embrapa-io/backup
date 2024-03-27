@@ -70,6 +70,6 @@ echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
 
 echo "Clean up unused images..."
 
-docker builder prune -af --filter "until=24h"
+# docker builder prune -af --filter "until=24h"
 
 docker image prune -af --filter "until=24h"
