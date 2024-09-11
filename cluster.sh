@@ -1,6 +1,8 @@
 #!/bin/sh
 
-echo "Starting embrapa.io backup process to cluster.agro.rocks..."
+HOSTNAME=$(hostname)
+
+echo "Starting embrapa.io backup process to $HOSTNAME..."
 
 type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Aborting."; exit 1; }
 
@@ -22,13 +24,13 @@ find $BKP_PATH -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
 
 echo "Creating backup folder: '$BKP_FOLDER'..."
 
-mkdir -p $BKP_PATH/$BKP_FOLDER/cluster.agro.rocks
+mkdir -p $BKP_PATH/$BKP_FOLDER/$HOSTNAME
 
 set +e
 
 echo "Starting Docker backup process with 'docker-backup' to all containers..."
 
-cd $BKP_PATH/$BKP_FOLDER/cluster.agro.rocks
+cd $BKP_PATH/$BKP_FOLDER/$HOSTNAME
 
 docker-backup backup --all --stopped --tar --verbose
 
