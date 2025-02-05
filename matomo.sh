@@ -38,11 +38,9 @@ docker compose run --rm --no-deps backup
 
 echo "Copying backup and config files..."
 
-cp -r $MATOMO_PATH/backup/* $BKP_PATH/$BKP_FOLDER/matomo/
+mv $MATOMO_PATH/backup/matomo_*.tar.gz $BKP_PATH/$BKP_FOLDER/matomo/
 
-rm $MATOMO_PATH/backup/*
-
-cp $MATOMO_PATH/.env* $BKP_PATH/$BKP_FOLDER/matomo/
+cp $MATOMO_PATH/.env $BKP_PATH/$BKP_FOLDER/matomo/
 
 # When Matomo is running in dedicated server:
 
@@ -72,8 +70,8 @@ rm -rf $BKP_PATH/$BKP_FOLDER
 
 echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
 
-# When Matomo is running in dedicated server:
+echo "Clean up unused images..."
 
-# echo "Clean up unused images..."
+docker builder prune -af --filter "until=24h"
 
-# docker image prune -af --filter "until=24h"
+docker image prune -af --filter "until=24h"
