@@ -32,6 +32,8 @@ echo "Running Docker Compose backup process..."
 
 cd $MATOMO_PATH
 
+docker compose exec archive /usr/local/bin/php /app/console core:archive --url=https://hit.embrapa.io
+
 docker compose build --force-rm --no-cache backup
 
 docker compose run --rm --no-deps backup
