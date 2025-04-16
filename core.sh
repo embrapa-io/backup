@@ -30,9 +30,9 @@ echo "Running Docker Compose backup process..."
 
 cd $IO_PATH
 
-env $(cat .env.cli) docker compose build --force-rm --no-cache backup
+docker compose build --force-rm --no-cache backup
 
-env $(cat .env.cli) docker compose run --rm --no-deps backup
+docker compose run --rm --no-deps backup
 
 echo "Copying backup and config files..."
 
