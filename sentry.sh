@@ -34,6 +34,10 @@ cd $SENTRY_PATH
 
 docker compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export > $BKP_PATH/$BKP_FOLDER/sentry/backup.json
 
+docker compose exec -T postgres pg_dump -U postgres -d postgres > $BKP_PATH/$BKP_FOLDER/sentry/postgres.sql
+
+docker cp $(docker compose ps -q redis):/data/dump.rdb "$BKP_PATH/$BKP_FOLDER/sentry/redis.rdb"
+
 echo "Copying config files..."
 
 cp $SENTRY_PATH/sentry/config.yml $BKP_PATH/$BKP_FOLDER/sentry/
