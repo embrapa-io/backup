@@ -6,6 +6,10 @@ type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Abor
 
 set -e
 
+# Backups contêm segredos (dumps de DB, .env, configs) — não podem ficar
+# world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
+umask 077
+
 IO_PATH="/root/embrapa.io/backend"
 
 [ ! -d $IO_PATH ] && echo "$IO_PATH does not exist." && exit 1
@@ -92,7 +96,7 @@ rm $IO_PATH/.embrapa/backup/*.tar.gz
 
 cp $IO_PATH/.env* $BKP_PATH/$BKP_FOLDER/backend/
 
-if ! type docker-backup &> /dev/null; then
+if type docker-backup > /dev/null 2>&1; then
     set +e
 
     echo "Starting Docker backup process with 'docker-backup' to all containers..."
@@ -102,10 +106,16 @@ if ! type docker-backup &> /dev/null; then
     cd $BKP_PATH/$BKP_FOLDER/docker
 
     docker-backup backup --all --stopped --tar --verbose
+    DOCKER_BACKUP_RC=$?
 
     set -e
+
+    # Avisa (sem abortar) se o docker-backup falhou.
+    if [ "$DOCKER_BACKUP_RC" -ne 0 ]; then
+      echo >&2 "WARNING: 'docker-backup' saiu com código $DOCKER_BACKUP_RC — o backup pode estar incompleto!"
+    fi
 else
-    echo "Command 'docker-backup' has not found! See: https://github.com/muesli/docker-backup"
+    echo "Command 'docker-backup' not found! See: https://github.com/muesli/docker-backup"
 fi
 
 echo "Compressing backup folder..."
@@ -120,6 +130,6 @@ echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
 
 echo "Clean up unused images..."
 
-docker builder prune -af --filter "until=24h"
+docker builder prune -af --filter "until=24h" || true
 
-docker image prune -af --filter "until=24h"
+docker image prune -af --filter "until=24h" || true

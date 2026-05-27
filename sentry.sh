@@ -8,6 +8,10 @@ type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Abor
 
 set -e
 
+# Backups contêm segredos (dumps de DB, .env, configs) — não podem ficar
+# world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
+umask 077
+
 SENTRY_PATH="/root/sentry"
 
 [ ! -d $SENTRY_PATH ] && echo "$SENTRY_PATH does not exist." && exit 1

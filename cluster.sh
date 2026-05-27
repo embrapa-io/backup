@@ -10,6 +10,10 @@ type docker-backup > /dev/null 2>&1 || { echo >&2 "Command 'docker-backup' has n
 
 set -e
 
+# Backups contêm segredos (dumps de DB, .env, configs) — não podem ficar
+# world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
+umask 077
+
 BKP_PATH="/var/opt/embrapa.io/backup"
 
 mkdir -p $BKP_PATH
@@ -85,8 +89,15 @@ echo "Starting Docker backup process with 'docker-backup' to all containers..."
 cd $BKP_PATH/$BKP_FOLDER/$HOSTNAME
 
 docker-backup backup --all --stopped --tar --verbose
+DOCKER_BACKUP_RC=$?
 
 set -e
+
+# Avisa (sem abortar) se o docker-backup falhou — evita empacotar um .tar.gz
+# "válido" porém incompleto sem ninguém perceber.
+if [ "$DOCKER_BACKUP_RC" -ne 0 ]; then
+  echo >&2 "WARNING: 'docker-backup' saiu com código $DOCKER_BACKUP_RC — o backup pode estar incompleto!"
+fi
 
 echo "Compressing backup folder..."
 
@@ -100,6 +111,6 @@ echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
 
 echo "Clean up unused images..."
 
-docker builder prune -af --filter "until=24h"
+docker builder prune -af --filter "until=24h" || true
 
-docker image prune -af --filter "until=24h"
+docker image prune -af --filter "until=24h" || true

@@ -8,6 +8,10 @@ type docker > /dev/null 2>&1 || { echo >&2 "Command 'docker' has not found! Abor
 
 set -e
 
+# Backups contêm segredos (dumps de DB, .env, configs) — não podem ficar
+# world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
+umask 077
+
 MATOMO_PATH="/root/matomo"
 
 [ ! -d $MATOMO_PATH ] && echo "$MATOMO_PATH does not exist." && exit 1
@@ -124,6 +128,6 @@ echo "All done! Backup file at: $BKP_PATH/$BKP_FOLDER.tar.gz"
 
 echo "Clean up unused images..."
 
-docker builder prune -af --filter "until=24h"
+docker builder prune -af --filter "until=24h" || true
 
-docker image prune -af --filter "until=24h"
+docker image prune -af --filter "until=24h" || true

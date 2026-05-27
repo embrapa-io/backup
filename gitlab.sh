@@ -6,6 +6,10 @@ type gitlab-backup > /dev/null 2>&1 || { echo >&2 "The command 'gitlab-backup' h
 
 set -e
 
+# Backups contêm segredos (dumps de DB, configs do GitLab) — não podem ficar
+# world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
+umask 077
+
 BKP_PATH="/var/opt/embrapa.io/backup"
 
 mkdir -p $BKP_PATH
