@@ -12,7 +12,7 @@ set -e
 # world-readable. Restringe a permissão dos arquivos/pastas criados a seguir.
 umask 077
 
-SENTRY_PATH="/root/sentry"
+SENTRY_PATH="/opt/sentry"
 
 [ ! -d $SENTRY_PATH ] && echo "$SENTRY_PATH does not exist." && exit 1
 
@@ -86,7 +86,12 @@ echo "Running Docker Compose backup process..."
 
 cd $SENTRY_PATH
 
-docker compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export > $BKP_PATH/$BKP_FOLDER/sentry/backup.json
+# Sentry 26.x: o comando é "export global" (relocation) e grava em ARQUIVO dentro
+# do container (/etc/sentry == ./sentry no host). Gravar em arquivo (em vez de
+# redirecionar stdout) evita capturar o lixo do entrypoint ("Updating certificates...").
+rm -f $SENTRY_PATH/sentry/backup.json
+docker compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export global /etc/sentry/backup.json
+mv $SENTRY_PATH/sentry/backup.json $BKP_PATH/$BKP_FOLDER/sentry/backup.json
 
 docker compose exec -T postgres pg_dump -U postgres -d postgres > $BKP_PATH/$BKP_FOLDER/sentry/postgres.sql
 
