@@ -86,12 +86,13 @@ echo "Running Docker Compose backup process..."
 
 cd $SENTRY_PATH
 
-# Sentry 26.x: o comando é "export global" (relocation) e grava em ARQUIVO dentro
-# do container (/etc/sentry == ./sentry no host). Gravar em arquivo (em vez de
-# redirecionar stdout) evita capturar o lixo do entrypoint ("Updating certificates...").
-rm -f $SENTRY_PATH/sentry/backup.json
-docker compose run --rm -T -e SENTRY_LOG_LEVEL=CRITICAL web export global /etc/sentry/backup.json
-mv $SENTRY_PATH/sentry/backup.json $BKP_PATH/$BKP_FOLDER/sentry/backup.json
+# Sentry 26.x: "export global" via 'exec' no container web em execução.
+#  - exec (em vez de run): não dispara o entrypoint -> sem lixo "Updating certificates..."
+#  - grava em /tmp do container (gravável pelo usuário não-root do Sentry) -> evita o
+#    "Permission denied" (o bind mount ./sentry == /etc/sentry pertence ao root do host).
+docker compose exec -T web sentry export global /tmp/io_backup.json
+docker compose cp web:/tmp/io_backup.json "$BKP_PATH/$BKP_FOLDER/sentry/backup.json"
+docker compose exec -T web rm -f /tmp/io_backup.json
 
 docker compose exec -T postgres pg_dump -U postgres -d postgres > $BKP_PATH/$BKP_FOLDER/sentry/postgres.sql
 
