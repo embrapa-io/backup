@@ -132,4 +132,8 @@ echo "Clean up unused images..."
 
 docker builder prune -af --filter "until=24h" || true
 
-docker image prune -af --filter "until=24h" || true
+# Uma semana, e não 24 h: depois de um deploy com '--force-recreate' a imagem
+# anterior fica órfã e seria apagada já no backup seguinte, levando junto o
+# rollback imediato. A janela acompanha a retenção dos backups (7 dias), de
+# modo que, enquanto existir o backup de um dia, existe também a sua imagem.
+docker image prune -af --filter "until=168h" || true
